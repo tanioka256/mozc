@@ -3,6 +3,7 @@
 ;; Copyright 2010-2021, Google Inc. All rights reserved.
 
 ;; Keywords: mule, multilingual, input method
+;; Package-Requires: ((emacs "24.3"))
 
 ;; Redistribution and use in source and binary forms, with or without
 ;; modification, are permitted provided that the following conditions are
@@ -395,37 +396,37 @@ Key code and symbols are renamed so that the helper process understands them."
                  (?\b 'backspace)
                  (?\s 'space)
                  (?\d 'backspace)
-                 ('eisu-toggle 'eisu)
-                 ('hiragana-katakana 'kana)
-                 ('next 'pagedown)
-                 ('prior 'pageup)
-                 ('kp-decimal 'decimal)
-                 ('kp-0 'numpad0)
-                 ('kp-1 'numpad1)
-                 ('kp-2 'numpad2)
-                 ('kp-3 'numpad3)
-                 ('kp-4 'numpad4)
-                 ('kp-5 'numpad5)
-                 ('kp-6 'numpad6)
-                 ('kp-7 'numpad7)
-                 ('kp-8 'numpad8)
-                 ('kp-9 'numpad9)
-                 ('kp-delete 'delete)  ; .
-                 ('kp-insert 'insert)  ; 0
-                 ('kp-end 'end)        ; 1
-                 ('kp-down 'down)      ; 2
-                 ('kp-next 'pagedown)  ; 3
-                 ('kp-left 'left)      ; 4
-                 ('kp-begin 'clear)    ; 5
-                 ('kp-right 'right)    ; 6
-                 ('kp-home 'home)      ; 7
-                 ('kp-up 'up)          ; 8
-                 ('kp-prior 'pageup)   ; 9
-                 ('kp-add 'add)
-                 ('kp-subtract 'subtract)
-                 ('kp-multiply 'multiply)
-                 ('kp-divide 'divide)
-                 ('kp-enter 'enter)
+                 (eisu-toggle 'eisu)
+                 (hiragana-katakana 'kana)
+                 (next 'pagedown)
+                 (prior 'pageup)
+                 (kp-decimal 'decimal)
+                 (kp-0 'numpad0)
+                 (kp-1 'numpad1)
+                 (kp-2 'numpad2)
+                 (kp-3 'numpad3)
+                 (kp-4 'numpad4)
+                 (kp-5 'numpad5)
+                 (kp-6 'numpad6)
+                 (kp-7 'numpad7)
+                 (kp-8 'numpad8)
+                 (kp-9 'numpad9)
+                 (kp-delete 'delete)  ; .
+                 (kp-insert 'insert)  ; 0
+                 (kp-end 'end)        ; 1
+                 (kp-down 'down)      ; 2
+                 (kp-next 'pagedown)  ; 3
+                 (kp-left 'left)      ; 4
+                 (kp-begin 'clear)    ; 5
+                 (kp-right 'right)    ; 6
+                 (kp-home 'home)      ; 7
+                 (kp-up 'up)          ; 8
+                 (kp-prior 'pageup)   ; 9
+                 (kp-add 'add)
+                 (kp-subtract 'subtract)
+                 (kp-multiply 'multiply)
+                 (kp-divide 'divide)
+                 (kp-enter 'enter)
                  (t basic-type))))
       (cond
        ;; kana + shift + rest => katakana + rest
@@ -661,7 +662,7 @@ This hack could be moved to mozc-posn-at-x-y in a future version."
   "Return the width of WINDOW in pixel.
 WINDOW defaults to the selected window."
   (let ((rect (window-inside-pixel-edges window)))
-    (- (third rect) (first rect))))
+    (- (nth 2 rect) (nth 0 rect))))
 
 (defun mozc-header-line-height ()
   "Return the height of the header line.
@@ -1689,8 +1690,8 @@ A returned object is alist on success.  Otherwise, an error symbol."
       (condition-case nil
           (let ((obj-index
                  (read-from-string response)))  ; may signal end-of-file.
-            (if (mozc-string-match-p "^[ \t\n\v\f\r]*$"
-                                     (substring response (cdr obj-index)))
+            (if (string-match-p "^[ \t\n\v\f\r]*$"
+                                (substring response (cdr obj-index)))
                 ;; Only white spaces remain.
                 (car obj-index)
               ;; Unexpected characters remain at the end.
@@ -1752,16 +1753,6 @@ and LIST.  The default value of N is 1."
         (cons nil list)
       (setcdr pre-boundary nil)  ; Drop the rest of list.
       (cons list post-boundary))))
-
-(defun mozc-string-match-p (regexp string &optional start)
-  "Same as `string-match' except this function never change the match data.
-REGEXP, STRING and optional START are the same as for `string-match'.
-
-This function is equivalent to `string-match-p', which is available since
-Emacs 23."
-  (let ((inhibit-changing-match-data t))
-    (string-match regexp string start)))
-
 
 
 ;;;; Custom keymap
